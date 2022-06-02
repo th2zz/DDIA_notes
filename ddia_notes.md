@@ -54,9 +54,10 @@
 - OLAP
   - traditional data warehousing MPP query engine + column store
     - https://www.devopsschool.com/blog/what-is-apache-kudu/
-  - modern cloudnative architecture
-    - snowflakes
-    - databricks data lakehouse 
+- modern cloudnative architecture: seperation of computation and storage
+  - "htap" tidb
+  - snowflakes
+  - databricks data lakehouse 
 
 ## Evolution and encoding
 
