@@ -93,6 +93,24 @@
     - low latency like RPC + durability like database
 
 # Ch 2. Distributed Data
+- why replicated data
+  - geographically close to user, reduce latency
+  - failure tolerance, increase availbility
+  - scale out (horizontally) to increase read throughput
+- difficulties in replication
+  - handling **changes** in replicated data
+    - single-leader 
+    - multi-leader
+    - leaderless
+  - trade-offs, usually configuration options
+    - synchronous vs asynchronous
+    - replica failure ?
+## Leaders and followers
+- replica: a node that stores a copy of the database
+  - how to ensure all the data ends up on all replicas
+    - every write should be processed by every replica, otherwise data insonsistency
+- leader-based replication / active-passive / master-slave
+  - p.152
 
 # Ch 3. Derived Data
 
