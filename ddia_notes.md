@@ -108,10 +108,13 @@
     - synchronous vs asynchronous
     - replica failure ?
 ## Leaders and followers
+
+![](https://raw.githubusercontent.com/th2zz/typora_img_host/master/img/Screenshot%202022-06-09%20094738.png)
+
+
 - replica: a node that stores a copy of the database
   - how to ensure all the data ends up on all replicas?
     - every write should be processed by every replica, otherwise data insonsistency
-![](https://raw.githubusercontent.com/th2zz/typora_img_host/master/img/Screenshot%202022-06-09%20094738.png)
 - leader-based replication / active-passive / master-slave
   - clients writes to leader => leader writes to local storage
   - leader sends data change to all followers as part of a **replication log** / change stream
