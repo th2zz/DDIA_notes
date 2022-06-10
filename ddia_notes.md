@@ -134,7 +134,7 @@
           - RabbitMQ HA queues
       - Some network file systems and replicated block devices
           - DRBD
-## Synchronous vs Asynchronous Replication
+### Synchronous vs Asynchronous Replication
 - synchronous replication
   - replica has guranteed **update-to-date consistent copy** of the data
   - will **block write requests** until replica available again
@@ -144,7 +144,7 @@
     - write is not guranteed to be durable: a failed leader can lost all updates that are not replicated
     - nonblocking writes: leader not blocked by followers' progress
     - commonly used in many-followers / geographically distributed systems
-## Setting up new followers
+### Setting up new followers
 - naive bootstrapping process does not make sense:
   - simply copy data files: data is in flux, writing may hit leader, different parts may have different outlook
   - lock database for writes? decreases availbility
@@ -158,7 +158,7 @@
       - MySQL: binlog coordinates
   - follower gradually caught up and in sync
 
-## Handling Node outages
+### Handling Node outages
 - how to keep system running with limited impact from node down-time
 - How to achieve high availbility with leader-based replication ?
 - Follower failure
@@ -190,8 +190,8 @@
         - too short => unnecessary failovers
           - load spike / network glitch => increased response time 
           - an uncessary failover can negatively affect system under high load
-## Leader-based replication Impelentations
-- statement-based replication logging
+### Leader-based replication Impelentations
+- statement-based replication 
   - process
     - leader logs every writes request (statement) it executes
       - e.g. Relational: INSERT, UPDATE, DELETE
@@ -199,7 +199,55 @@
     - each follower parses & executes the SQL statement
   - Issues
     - nondeterministic function calls can have different value on each replica: NOW(), RAND()
-    - p.159 181
+    - statement with auto-incrementing columns ? stmts that depends on existing data?
+    - stmt that have side-effects: triggers stored-procedures UDF
+- WAL log shipping
+  - bootstrap a new follower with the log, when follower processes the log, it builds a copy of the exact same data structure as leader
+    - used in PostgreSQL, Oracle
+  - **tightly coupled with low-level storage engine**
+    - e.g. innoDB redo log
+- logical (row-based) replication
+  - decouple with storage engine. This is logical not physical (storage engine)
+    - granularity of row: inserted, deleted, updated row & column values
+  - MySQL binlog support statement-based, row-based configuration
+  - easily backward compatible
+  - can be parsed by external application "change data capture"
+    - e.g. gh-ost
+- trigger-based replication
+  - implemented by DBMS itself
+  - great overheads, prone to bugs
+  - e.g. databus for oracle, Bucardo for Postgres
+### Replication lag
+- read scaling architecture (add more followers) only work with async replication.
+  - for sync replication it is still unreliable
+- read after write can be inconsistent => eventually catch up => eventual consistency
+  - lag can be seconds or minutes
+- achieve read-after-write consistency
+  - reading sth that user may have modified, read it from leader, otherwise read from follower
+    - e.g. profile pic
+  - for write-heavy use case, can read from leader for 1 minutes after updates
+  - client knows most recent write timestamp, system make sure to sync replica up to that timestamp
+    - logical timestamp or reliable clock
+  - geographically dispersed replicas: how to route request to data center that contains the leader
+  - cross-device read-after-write consistencies ?
+- monotonic reads p.164
+  - move back in time
+    - reading 2 different replicas that are at differnet replication progress 
+  - monotonic reads gurantee read after read consistency: no going back in time
+- consistent prefix reads p. 165
+
+#### Solution with replication lag
+- transaction: a way for database to provide a stronger gurantee
+## Multi-leader Replication
+p.168
+- use cases
+  - multi-datacenter operations
+  - clients with offline operations
+  - collaborative editing
+### handling write conflicts
+p.171
+
+## Leaderless Replication
 
 # Ch 3. Derived Data
 
