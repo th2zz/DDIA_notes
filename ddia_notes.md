@@ -248,6 +248,11 @@ p.168
 p.171
 
 ## Leaderless Replication
+- Dynamo, Riak, Cassandra, Voldemort
+- read write multiple nodes in parallel with r/w quorum, r + w > n
+- how do failed replica catch up
+  - read repair: client detects stale read from read quorum and version#, then fix it by writing new value
+  - anti-entropy: background process to reconcile difference and update stale data
 
 # Ch 3. Derived Data
 
